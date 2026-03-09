@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>EcoCalculadora Profesional</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0fdf4; display: flex; justify-content: center; padding: 40px; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 400px; border-top: 8px solid #22c55e; text-align: center; }
+        input { width: 90%; padding: 12px; margin: 15px 0; border: 2px solid #22c55e; border-radius: 10px; }
+        button { background: #22c55e; color: white; padding: 12px; width: 100%; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .resultados-grid { text-align: left; margin: 20px 0; padding: 15px; background: #f8fafc; border-radius: 10px; }
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 0.9rem; }
+        th { background: #f8fafc; padding: 8px; border-bottom: 2px solid #22c55e; }
+        td { padding: 8px; border-bottom: 1px solid #eee; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🌱 EcoCalculadora</h1>
+    <input type="number" id="gbInput" placeholder="GB utilizados">
+    <button onclick="calcular()">Calcular Impacto</button>
+
+    <div id="resultado" style="display:none;">
+        <div class="resultados-grid">
+            <p>💨 <strong>CO2:</strong> <span id="co2"></span> g</p>
+            <p>🌳 <strong>Árboles:</strong> <span id="arboles"></span> (día)</p>
+            <p>📱 <strong>Móviles:</strong> <span id="moviles"></span> cargas</p>
+        </div>
+        <table>
+            <thead><tr><th>Actividad</th><th>Horas eq.</th></tr></thead>
+            <tbody id="tablaBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+async function calcular() {
+    const gb = document.getElementById('gbInput').value;
+    
+    // Aquí pon la clave que tienes en tu .env
+const MI_CLAVE = ""; // IMPORTANTE: Introduce aquí tu API Key privada 
+    
+    const resp = await fetch(`http://127.0.0.1:8000/v1/calculate?gb=${gb}`, {
+        headers: { "X-API-Key": MI_CLAVE }
+    });
+    
+    if (resp.status === 403) {
+        alert("Error: Clave no válida. Contacta con el administrador.");
+        return;
+    }
+    
+    const d = await resp.json();
+    document.getElementById('co2').innerText = d.resumen.co2;
+    document.getElementById('arboles').innerText = d.resumen.arboles;
+    document.getElementById('moviles').innerText = d.resumen.moviles;
+    
+    const tabla = document.getElementById('tablaBody');
+    tabla.innerHTML = '';
+    for (const [act, horas] of Object.entries(d.tabla_comparativa)) {
+        tabla.innerHTML += `<tr><td>${act}</td><td>${horas}h</td></tr>`;
+    }
+    document.getElementById('resultado').style.display = 'block';
+}
+</script>
+</body>
+</html>
