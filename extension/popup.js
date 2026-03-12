@@ -8,7 +8,7 @@ async function updateUI() {
             try {
                 // Enviamos los GB REALES a tu API de Python
                 const response = await fetch(`http://127.0.0.1:8000/v1/calculate?gb=${currentGB}`, {
-                    headers: { "X-API-Key": "TU_API_KEY_AQUI" } // <--- CAMBIA ESTO POR TU CLAVE REAL PARA PROBAR
+                    headers: { "X-API-Key": "3C04P1_K3y_2026-JL*Cl34R..0K" } // <--- CAMBIA ESTO POR TU CLAVE REAL PARA PROBAR
                 });
                 const result = await response.json();
 
